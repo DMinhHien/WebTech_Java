@@ -1,0 +1,16 @@
+package WebTech.WebTech;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+
+@SpringBootApplication
+@EnableAsync
+public class WebTechApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(WebTechApplication.class, args);
+	}
+
+}
