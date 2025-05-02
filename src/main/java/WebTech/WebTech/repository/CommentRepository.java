@@ -12,4 +12,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, JpaSpec
     boolean existsByProduct_IdAndUser_Id(long productId, long userId);
     void deleteByProduct_IdAndUser_Id(long productId, long userId);
     void deleteByProduct_Id(long productId);
+    List<Comment> findByProduct_IdAndRatingNot(long productId, int i);
 }

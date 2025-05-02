@@ -1,6 +1,10 @@
 package WebTech.WebTech.service;
+import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
 import WebTech.WebTech.domain.Product;
@@ -37,8 +41,26 @@ public class ReceiptService {
         return this.receiptRepository.findById(id).orElse(null);
     }
 
-    public Receipt createReceipt(Receipt receipt) {
-        return this.receiptRepository.save(receipt);
+    public Receipt createReceipt(List<ReceiptDetail> receiptDetails, long userId) {
+        Receipt receipt = new Receipt();
+        String receiptId = UUID.randomUUID().toString().substring(0, 10);
+        receipt.setId(Long.parseLong(receiptId));
+        receipt.setDate(LocalDateTime.now().toInstant(java.time.ZoneOffset.UTC));
+        receiptRepository.save(receipt);
+        for (ReceiptDetail detail : receiptDetails) {
+            // Retrieve the product and update its quantity.
+            Product product = productRepository.findById(detail.getProduct().getId()).orElse(null);
+            if (product != null) {
+                product.setQuantity(product.getQuantity() - detail.getQuantity());
+                productRepository.save(product);
+            }
+            
+            // Generate a new id for the receipt detail and set its receipt id.
+            detail.setId(Long.parseLong(UUID.randomUUID().toString().substring(0, 10)));
+            detail.getReceipt().setId(Long.parseLong(receiptId));
+            receiptDetailRepository.save(detail);
+        }
+        return receipt;
     }
 
     public Receipt updateReceipt(Receipt receipt) {
@@ -85,9 +107,8 @@ public class ReceiptService {
         }
         return result;
     }
-    public List<ReceiptDetailShopResponseDTO> getListUseShop(String shopIdStr) {
+    public List<ReceiptDetailShopResponseDTO> getListUseShop(Long shopId) {
         // Here we assume shopId is convertible to long; adjust as needed.
-        long shopId = Long.parseLong(shopIdStr);
         List<ReceiptDetail> allDetails = receiptDetailRepository.findAll();
         List<ReceiptDetailShopResponseDTO> result = new ArrayList<>();
 
@@ -135,27 +156,26 @@ public class ReceiptService {
             });
         return result;
     }
-    public List<ReceiptDetailDTO> getReceiptDetail(String receiptIdStr) {
-    long receiptId = Long.parseLong(receiptIdStr);
-    List<ReceiptDetail> details = receiptDetailRepository.findByReceipt_Id(receiptId);
-    List<ReceiptDetailDTO> result = new ArrayList<>();
+    public List<ReceiptDetailDTO> getReceiptDetail(Long receiptId) {
+        List<ReceiptDetail> details = receiptDetailRepository.findByReceipt_Id(receiptId);
+        List<ReceiptDetailDTO> result = new ArrayList<>();
 
-    for (ReceiptDetail rd : details) {
-        Product product = productRepository.findById(rd.getProduct().getId()).orElse(null);
-        String image = product != null ? product.getImage() : "";
-        double unitPrice = product != null ? product.getUnitPrice() : 0;
-        String productName = product != null ? product.getProductName() : "";
+        for (ReceiptDetail rd : details) {
+            Product product = productRepository.findById(rd.getProduct().getId()).orElse(null);
+            String image = product != null ? product.getImage() : "";
+            double unitPrice = product != null ? product.getUnitPrice() : 0;
+            String productName = product != null ? product.getProductName() : "";
         
-        ReceiptDetailDTO dto = ReceiptDetailDTO.builder()
-                .id(rd.getId())
-                .productId(rd.getProduct().getId())
-                .quantity(rd.getQuantity())
-                .Image(image)
-                .UnitPrice(unitPrice)
-                .ProductName(productName)
-                .build();
-        result.add(dto);
+            ReceiptDetailDTO dto = ReceiptDetailDTO.builder()
+                    .id(rd.getId())
+                    .productId(rd.getProduct().getId())
+                    .quantity(rd.getQuantity())
+                    .Image(image)
+                    .UnitPrice(unitPrice)
+                    .ProductName(productName)
+                    .build();
+            result.add(dto);
+        }
+        return result;
     }
-    return result;
-}
 }

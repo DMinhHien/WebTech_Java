@@ -1,5 +1,6 @@
 package WebTech.WebTech.service;
 import WebTech.WebTech.domain.Category;
+import WebTech.WebTech.domain.DTO.CategoryDTO;
 import WebTech.WebTech.repository.CategoryRepository;
 
 
@@ -33,11 +34,20 @@ public class CategoryService {
     public boolean existsByName(String name) {
         return categoryRepository.existsByName(name);
     }
+    public Category convertDTOtCategory(CategoryDTO categoryDTO) {
+        Category category = new Category();
+        category.setId(categoryDTO.getId());
+        category.setName(categoryDTO.getName());
+        return category;
+    }
 
     public Category findByNameAndIdNot(String name, long id) {
         return categoryRepository.findByNameAndIdNot(name, id);
     }
-
+    public void createCategory(CategoryDTO category) {
+        Category categoryEntity = convertDTOtCategory(category);
+        categoryRepository.save(categoryEntity);
+    }
     public void saveCategory(Category category) {
         categoryRepository.save(category);
     }

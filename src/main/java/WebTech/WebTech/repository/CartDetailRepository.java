@@ -9,6 +9,7 @@ import java.util.List;
 public interface CartDetailRepository extends JpaRepository<CartDetail, Long>, JpaSpecificationExecutor<CartDetail> {
     List<CartDetail> findByCart_Id(long idCart);
     List<CartDetail> findByProduct_Id(long idProduct);
+    CartDetail findByProduct_IdAndCart_Id(long id, Long cartId);
     
 
 }

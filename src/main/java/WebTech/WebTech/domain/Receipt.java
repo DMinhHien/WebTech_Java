@@ -1,4 +1,6 @@
 package WebTech.WebTech.domain;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -25,7 +27,7 @@ public class Receipt {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    private String date;
+    private Instant date;
     @OneToMany(mappedBy = "receipt", fetch = FetchType.LAZY)
     private List<ReceiptDetail> receiptDetails;
     

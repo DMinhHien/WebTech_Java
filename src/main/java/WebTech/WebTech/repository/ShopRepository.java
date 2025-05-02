@@ -12,5 +12,6 @@ public interface ShopRepository extends JpaRepository<Shop, Long>, JpaSpecificat
     public boolean existsByName(String name);
     public Shop findByNameAndIdNot(String name, long id);
     public Shop findById(long id);
+    public Shop findByUser_Id(long userId);
     
 }

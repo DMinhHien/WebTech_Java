@@ -2,6 +2,7 @@ package WebTech.WebTech.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import WebTech.WebTech.domain.Shop;
+import WebTech.WebTech.domain.DTO.ShopDTO;
 import WebTech.WebTech.repository.ShopRepository;
 @Service
 public class ShopService {
@@ -15,12 +16,15 @@ public class ShopService {
         return this.shopRepository.existsByName(name);
     }
 
-    public List<Shop> getAllShops() {
-        return this.shopRepository.findAll();
+    public List<ShopDTO> getAllShops() {
+        List<Shop> shops = this.shopRepository.findAll();
+        return shops.stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
-    public Shop getShopById(long id) {
-        return this.shopRepository.findById(id);
+    public ShopDTO getShopById(long id) {
+        return convertToDTO(this.shopRepository.findById(id));
     }
 
     public Shop createShop(Shop shop) {
@@ -37,5 +41,20 @@ public class ShopService {
     public List<Shop> searchShops(String name) {
         return this.shopRepository.findByName(name);
     }
-    
+    public ShopDTO convertToDTO(Shop shop) {
+        return ShopDTO.builder()
+                .id(shop.getId())
+                .name(shop.getName())
+                .address(shop.getAddress())
+                .image(shop.getImage())
+                .userName(shop.getUser().getEmail())
+                .rating(shop.getRating())
+                .build();
+    }
+    public ShopDTO getShopByUserId (long userId) {
+        return convertToDTO(this.shopRepository.findByUser_Id(userId));
+    } 
+    public Long getShopId (long userId) {
+        return this.shopRepository.findByUser_Id(userId).getId();
+    }
 }

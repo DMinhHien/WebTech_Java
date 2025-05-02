@@ -6,43 +6,33 @@ import WebTech.WebTech.domain.Product;
 import WebTech.WebTech.domain.Shop;
 import WebTech.WebTech.domain.DTO.CartDTO;
 import WebTech.WebTech.domain.DTO.CartDetailDTO;
-import WebTech.WebTech.domain.DTO.CartDetailResponseDTO;
 import WebTech.WebTech.domain.DTO.CartProductDTO;
 import WebTech.WebTech.domain.DTO.CartResponseDTO;
-import WebTech.WebTech.domain.DTO.ProductDTO;
 import WebTech.WebTech.domain.DTO.ProductInfoDTO;
 import WebTech.WebTech.domain.DTO.ShopGroupDTO;
 import WebTech.WebTech.domain.DTO.ShopInfoDTO;
 import WebTech.WebTech.repository.CartDetailRepository;
 import WebTech.WebTech.repository.CartRepository;
-import WebTech.WebTech.repository.ProductRepository;
-import WebTech.WebTech.repository.ShopRepository;
 import WebTech.WebTech.repository.UserRepository;
 
 import WebTech.WebTech.domain.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 @Service
 public class CartService {  
     private final CartDetailRepository cartDetailRepository;
-    private final ProductRepository productRepository;
-    private final ShopRepository shopRepository;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     public CartService(CartRepository cartRepository, 
                       CartDetailRepository cartDetailRepository,
-                      ProductRepository productRepository,
-                      ShopRepository shopRepository,
                       UserRepository userRepository) {
         this.cartRepository = cartRepository;
         this.cartDetailRepository = cartDetailRepository;
-        this.productRepository = productRepository;
-        this.shopRepository = shopRepository;
         this.userRepository = userRepository;
     }
     public List<Cart> getAllCarts() {
@@ -88,57 +78,100 @@ public class CartService {
                 .build();
     }
     public CartResponseDTO getCartWithShopsByUserId(Long userIdStr) {
-    long userId = userIdStr;
+        long userId = userIdStr;
     
-    Cart cart = findByUserId(userId);
-    if (cart == null) {
-        return null;
+        Cart cart = findByUserId(userId);
+        if (cart == null) {
+            return null;
+        }
+    
+        List<CartDetail> details = cartDetailRepository.findByCart_Id(cart.getId());
+        Map<Long, List<CartDetail>> groupedDetails = details.stream()
+            .filter(d -> d.getProduct() != null && d.getProduct().getShop() != null)
+            .collect(Collectors.groupingBy(d -> d.getProduct().getShop().getId()));
+         
+        List<ShopGroupDTO> shopGroups = new ArrayList<>();
+    
+        for (Map.Entry<Long, List<CartDetail>> entry : groupedDetails.entrySet()) {
+            Long shopId = entry.getKey();
+            List<CartDetail> shopDetails = entry.getValue();
+            Shop shop = shopDetails.get(0).getProduct().getShop();
+            ShopInfoDTO shopInfo = ShopInfoDTO.builder()
+                .name(shop.getName())
+                .image(shop.getImage())
+                .build();
+            List<CartProductDTO> products = shopDetails.stream().map(detail -> {
+                Product product = detail.getProduct();
+                ProductInfoDTO productInfo = ProductInfoDTO.builder()
+                    .productName(product.getProductName())
+                    .unitPrice(product.getUnitPrice())
+                    .image(product.getImage())
+                    .quantity(product.getQuantity())
+                    .build();
+                return CartProductDTO.builder()
+                    .id(String.valueOf(detail.getId()))
+                    .idProduct(String.valueOf(product.getId()))
+                    .quantity(detail.getQuantity())
+                    .productInfo(productInfo)
+                    .build();
+            }).collect(Collectors.toList());
+         
+            ShopGroupDTO shopGroup = ShopGroupDTO.builder()
+                .shopId(String.valueOf(shopId))
+                .shopInfo(shopInfo)
+                .products(products)
+                .build();
+         
+             shopGroups.add(shopGroup);
+        }
+    
+        return CartResponseDTO.builder()
+            .id(String.valueOf(cart.getId()))
+            .userId(String.valueOf(cart.getUser().getId()))
+            .shops(shopGroups)
+            .build();
     }
-    
-    List<CartDetail> details = cartDetailRepository.findByCart_Id(cart.getId());
-    Map<Long, List<CartDetail>> groupedDetails = details.stream()
-         .filter(d -> d.getProduct() != null && d.getProduct().getShop() != null)
-         .collect(Collectors.groupingBy(d -> d.getProduct().getShop().getId()));
+    public CartDetail addCartProduct(CartDetail model) {
+      
+        Long cartId = model.getCart().getId();
+        
+        CartDetail existsProduct = cartDetailRepository.findByProduct_IdAndCart_Id(model.getProduct().getId(), cartId);
+        
+        if (existsProduct != null) {
+            
+            existsProduct.setQuantity(existsProduct.getQuantity() + 1);
+            cartDetailRepository.save(existsProduct);
+            return existsProduct;
+        } else {
          
-    List<ShopGroupDTO> shopGroups = new ArrayList<>();
-    
-    for (Map.Entry<Long, List<CartDetail>> entry : groupedDetails.entrySet()) {
-         Long shopId = entry.getKey();
-         List<CartDetail> shopDetails = entry.getValue();
-         Shop shop = shopDetails.get(0).getProduct().getShop();
-         ShopInfoDTO shopInfo = ShopInfoDTO.builder()
-             .name(shop.getName())
-             .image(shop.getImage())
-             .build();
-         List<CartProductDTO> products = shopDetails.stream().map(detail -> {
-             Product product = detail.getProduct();
-             ProductInfoDTO productInfo = ProductInfoDTO.builder()
-                 .productName(product.getProductName())
-                 .unitPrice(product.getUnitPrice())
-                 .image(product.getImage())
-                 .quantity(product.getQuantity())
-                 .build();
-             return CartProductDTO.builder()
-                 .id(String.valueOf(detail.getId()))
-                 .idProduct(String.valueOf(product.getId()))
-                 .quantity(detail.getQuantity())
-                 .productInfo(productInfo)
-                 .build();
-         }).collect(Collectors.toList());
-         
-         ShopGroupDTO shopGroup = ShopGroupDTO.builder()
-             .shopId(String.valueOf(shopId))
-             .shopInfo(shopInfo)
-             .products(products)
-             .build();
-         
-         shopGroups.add(shopGroup);
+            String newId = UUID.randomUUID().toString().substring(0, 10);
+            model.setId(Long.parseLong(newId));
+            cartDetailRepository.save(model);
+            return model;
+        }
     }
-    
-    return CartResponseDTO.builder()
-         .id(String.valueOf(cart.getId()))
-         .userId(String.valueOf(cart.getUser().getId()))
-         .shops(shopGroups)
-         .build();
-}
+    public CartDetail editCartDetail (CartDetailDTO cartDetailDTO) {
+        CartDetail cartDetail = cartDetailRepository.findById(cartDetailDTO.getId())
+                .orElseThrow(() -> new RuntimeException("CartDetail not found with id: " + cartDetailDTO.getId()));
+        
+     
+        cartDetail.setQuantity(cartDetailDTO.getQuantity());
+   
+        return cartDetailRepository.save(cartDetail);
+    }
+    public CartDetail deleteCartDetail (CartDetailDTO cartDetailDTO) {
+        CartDetail cartDetail = cartDetailRepository.findById(cartDetailDTO.getId())
+                .orElseThrow(() -> new RuntimeException("CartDetail not found with id: " + cartDetailDTO.getId()));
+       
+        cartDetailRepository.delete(cartDetail);
+        return cartDetail;
+    }
+    public String getCartId(long userId) {
+        Cart cart = cartRepository.findByUserId(userId);
+        if (cart != null) {
+            return String.valueOf(cart.getId());
+        } else {
+            return null;
+        }
+    }
 }

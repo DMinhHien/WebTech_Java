@@ -17,4 +17,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     public List<Product> findAll();
     List<Product> findByShopId(long shopId);
     List<Product> findByCategoryId(long categoryId);
+    List<Product> findByShop_IdAndRatingNot(long id, int i);
 }

@@ -2,27 +2,25 @@ package WebTech.WebTech.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import WebTech.WebTech.domain.Cart;
+import WebTech.WebTech.domain.CartDetail;
 import WebTech.WebTech.domain.DTO.CartDTO;
-import WebTech.WebTech.domain.DTO.CartProductDTO;
+
 import WebTech.WebTech.domain.DTO.CartResponseDTO;
 import WebTech.WebTech.service.CartService;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
 
-import org.springframework.http.HttpStatus;
+import java.util.Map;
+
 
 
 @RestController
@@ -40,5 +38,32 @@ public class CartController {
     public ResponseEntity<CartResponseDTO> getCartByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(cartService.getCartWithShopsByUserId(userId));
     }
+    @PostMapping("/Cart/addCartProduct")
+    public ResponseEntity<CartDetail> addCartProduct(@RequestBody Map<String, Object> payload) {
+        ObjectMapper mapper = new ObjectMapper();
+        // Extract the 'data' node from the payload and convert it to a CartDetail
+        JsonNode dataNode = mapper.convertValue(payload.get("data"), JsonNode.class);
+        CartDetail model = mapper.convertValue(dataNode, CartDetail.class);
+        return ResponseEntity.ok(cartService.addCartProduct(model));
+    }
+    @PostMapping("/Cart/getCartId/{userId}")
+    public String getCartId(@PathVariable String userId) {
+        return cartService.getCartId(Long.parseLong(userId));
+    }
+    @PostMapping("/CartdeleteCartDetail/{id}")
+    public ResponseEntity<Void> deleteCartDetail(@PathVariable String id) {
+        cartService.deleteCartDetail(Long.parseLong(id));
+        return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/Cart/editCartDetail")
+    public ResponseEntity<CartDetail> updateCartDetail(@RequestBody Map<String, Object> payload) {
+        ObjectMapper mapper = new ObjectMapper();
+        // Extract the 'data' node from the payload and convert it to a CartDetail
+        JsonNode dataNode = mapper.convertValue(payload.get("data"), JsonNode.class);
+        CartDetail model = mapper.convertValue(dataNode, CartDetail.class);
+        return ResponseEntity.ok(cartService.updateCartDetail(model));
+    }
+    
+    
     
 }
