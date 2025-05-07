@@ -3,6 +3,7 @@ package WebTech.WebTech.controller;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -108,5 +109,13 @@ public class UserController {
     @GetMapping("/User/getListUse")
     public ResponseEntity<List<UserDTO>> getListUse() {
         return ResponseEntity.ok(this.userService.getListUse());
+    }
+    @PostMapping("/User/updateRole")
+    public ResponseEntity<User> updateUserRole(@RequestBody Map<String, Object> payload) {
+        // Extract userId and roleId from the payload.
+        long userId = Long.parseLong(payload.get("userId").toString());
+        int roleId = Integer.parseInt(payload.get("roleId").toString());
+        User updatedUser = userService.updateUserRole(userId, roleId);
+        return ResponseEntity.ok(updatedUser);
     }
 }

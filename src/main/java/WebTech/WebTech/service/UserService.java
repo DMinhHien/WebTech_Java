@@ -22,6 +22,7 @@ import WebTech.WebTech.domain.User;
 import WebTech.WebTech.domain.DTO.ResCreateUserDTO;
 import WebTech.WebTech.domain.DTO.ResultPaginationDTO;
 import WebTech.WebTech.domain.DTO.UserDTO;
+import WebTech.WebTech.repository.RoleRepository;
 import WebTech.WebTech.repository.UserRepository;
 import WebTech.WebTech.util.error.IdInvalidException;
 
@@ -29,9 +30,12 @@ import WebTech.WebTech.util.error.IdInvalidException;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final String uploadDir = "src/main/resources/static/uploads/";
-    public UserService(UserRepository userRepository, RoleService roleService, PasswordEncoder passwordEncoder){
+    public UserService(UserRepository userRepository, RoleService roleService, 
+    PasswordEncoder passwordEncoder,   RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
@@ -240,5 +244,19 @@ public class UserService {
                         .role(user.getRole() != null ? user.getRole().getName() : null) // Extract role name
                         .build())
                 .toList();
+    }
+    public User updateUserRole(long userId, long roleId) {
+        // Fetch the user
+        User user = fetchUserById(userId);
+        if(user == null){
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+        Optional<Role> roleOptional = roleRepository.findById(roleId);
+        if(!roleOptional.isPresent()){
+            throw new RuntimeException("Role not found with id: " + roleId);
+        }
+        Role role = roleOptional.get();
+        user.setRole(role);
+        return userRepository.save(user);
     }
 }

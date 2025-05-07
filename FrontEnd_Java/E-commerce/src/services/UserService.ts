@@ -72,10 +72,10 @@ export const addRole =async (id:string,role:string)=>{
     }
 }
 
-export const editRole =async (id:string,role:string)=>{
+export const editRole =async (id:string,roleId:number)=>{
     try {
         const token = localStorage.getItem("token")
-        await axios.post(`http://localhost:8080/User/updateRole`,{userId: id,roleName:role},{ headers: { Authorization: `Bearer ${token}` } })
+        await axios.post(`http://localhost:8080/User/updateRole`,{userId: id,roleId:roleId},{ headers: { Authorization: `Bearer ${token}` } })
     } catch (error) {
         console.error("không thể thêm update role", error);
         throw error

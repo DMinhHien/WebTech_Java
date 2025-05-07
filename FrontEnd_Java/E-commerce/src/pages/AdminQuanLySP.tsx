@@ -47,6 +47,7 @@ export default function AdminQuanLySP() {
   useEffect(() => {
     getListProduct(shopId as string).then((data) => {
       setProducts(data);
+      console.log(data);
     });
     getListCategories().then((data) => {
       setCategories(data);

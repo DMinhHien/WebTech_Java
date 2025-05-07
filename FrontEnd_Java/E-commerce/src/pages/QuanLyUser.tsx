@@ -75,15 +75,17 @@ export default function QuanLyUser() {
     });
   };
 
-  const changeRole=(userId:string,role:string)=>()=>{
-    editRole(userId, role).then(() => {
+  const changeRole = (userId: string, roleId: number) => () => {
+    editRole(userId, roleId).then(() => {
+      // Lookup role name from roles array
+      const roleName = roles.find((role) => role.id === roleId)?.name || "User";
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
-          user.id === userId ? { ...user, role: role } : user
+          user.id === userId ? { ...user, role: roleName } : user
         )
       );
     });
-  }
+  };
 
   const editUser = (id: string) => () => {
     nav(`/admin/QuanLyUser/edit/${id}`);
@@ -190,14 +192,14 @@ export default function QuanLyUser() {
                     </td>
                     <td className="border border-gray-300 p-2">
                       <select
-                      value={user.role}
+                       value={roles.find((role) => role.name === user.role)?.id || ""}
                       onChange={(e)=>{
-                        changeRole(user.id,e.target.value)()
+                        changeRole(user.id,parseInt(e.target.value))()
                       }}
                       className="border border-gray-300 p-1 rounded m-1 w-3/4"
                     >
                      {roles.map((role) => (
-                          <option key={role.id} value={role.name}>
+                          <option key={role.id} value={role.id}>
                             {role.name}
                           </option>
                           ))}
