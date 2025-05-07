@@ -1,5 +1,7 @@
 package WebTech.WebTech.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import com.turkraft.springfilter.boot.Filter;
 
 import WebTech.WebTech.domain.Role;
 import WebTech.WebTech.domain.DTO.ResultPaginationDTO;
+import WebTech.WebTech.domain.DTO.RoleDTO;
 import WebTech.WebTech.service.RoleService;
 import WebTech.WebTech.util.error.IdInvalidException;
 import jakarta.validation.Valid;
@@ -87,5 +90,9 @@ public class RoleController {
     @GetMapping("/roles/active/{id}")
     public ResponseEntity<Role> activeRole(@PathVariable("id") long id){
         return ResponseEntity.ok().body(this.roleService.activeRole(id));
+    }
+    @GetMapping("/roles/getListUse")
+    public ResponseEntity<List<RoleDTO>> getListUse() {
+        return ResponseEntity.ok().body(this.roleService.getListRole());
     }
 }

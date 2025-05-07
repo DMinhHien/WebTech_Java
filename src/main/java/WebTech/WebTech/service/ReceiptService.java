@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import WebTech.WebTech.domain.User;
 import org.springframework.stereotype.Service;
 
 import WebTech.WebTech.domain.Product;
@@ -19,18 +20,21 @@ import WebTech.WebTech.domain.DTO.ReceiptResponseDTO;
 import WebTech.WebTech.repository.ProductRepository;
 import WebTech.WebTech.repository.ReceiptDetailRepository;
 import WebTech.WebTech.repository.ReceiptRepository;
+import WebTech.WebTech.repository.UserRepository;
 @Service
 public class ReceiptService {
      private final ReceiptRepository receiptRepository;
     private final ReceiptDetailRepository receiptDetailRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository; // Assuming you have a UserRepository
 
     public ReceiptService(ReceiptRepository receiptRepository, 
                           ReceiptDetailRepository receiptDetailRepository,
-                          ProductRepository productRepository) {
+                          ProductRepository productRepository, UserRepository userRepository) {
         this.receiptRepository = receiptRepository;
         this.receiptDetailRepository = receiptDetailRepository;
         this.productRepository = productRepository;
+        this.userRepository = userRepository; // Initialize the UserRepository
     }
 
     public List<Receipt> getAllReceipts() {
@@ -43,24 +47,25 @@ public class ReceiptService {
 
     public Receipt createReceipt(List<ReceiptDetail> receiptDetails, long userId) {
         Receipt receipt = new Receipt();
-        String receiptId = UUID.randomUUID().toString().substring(0, 10);
-        receipt.setId(Long.parseLong(receiptId));
         receipt.setDate(LocalDateTime.now().toInstant(java.time.ZoneOffset.UTC));
-        receiptRepository.save(receipt);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        receipt.setUser(user);
+        Receipt savedReceipt = receiptRepository.save(receipt);
+        
         for (ReceiptDetail detail : receiptDetails) {
-            // Retrieve the product and update its quantity.
-            Product product = productRepository.findById(detail.getProduct().getId()).orElse(null);
+            // Update the product quantity.
+            Product product = productRepository.findById(detail.getProduct().getId())
+                    .orElse(null);
             if (product != null) {
                 product.setQuantity(product.getQuantity() - detail.getQuantity());
                 productRepository.save(product);
             }
-            
-            // Generate a new id for the receipt detail and set its receipt id.
-            detail.setId(Long.parseLong(UUID.randomUUID().toString().substring(0, 10)));
-            detail.getReceipt().setId(Long.parseLong(receiptId));
+            // Associate each detail with the saved receipt.
+            detail.setReceipt(savedReceipt);
             receiptDetailRepository.save(detail);
         }
-        return receipt;
+        return savedReceipt;
     }
 
     public Receipt updateReceipt(Receipt receipt) {
@@ -168,7 +173,7 @@ public class ReceiptService {
         
             ReceiptDetailDTO dto = ReceiptDetailDTO.builder()
                     .id(rd.getId())
-                    .productId(rd.getProduct().getId())
+                    .idProduct(rd.getProduct().getId())
                     .quantity(rd.getQuantity())
                     .Image(image)
                     .UnitPrice(unitPrice)

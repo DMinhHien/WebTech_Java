@@ -1,5 +1,7 @@
 package WebTech.WebTech.domain;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,6 +21,7 @@ import lombok.Setter;
 public class ReceiptDetail 
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
     @JoinColumn(name = "id_receipt")

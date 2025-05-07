@@ -1,24 +1,30 @@
 package WebTech.WebTech.service;
 import java.util.List;
+
+import WebTech.WebTech.domain.User;
 import org.springframework.stereotype.Service;
 import WebTech.WebTech.domain.Comment;
 import WebTech.WebTech.domain.Product;
 import WebTech.WebTech.domain.Shop;
+import WebTech.WebTech.domain.DTO.CommentDTO;
 import WebTech.WebTech.repository.CommentRepository;
 import WebTech.WebTech.repository.ProductRepository;
 import WebTech.WebTech.repository.ShopRepository;
+import WebTech.WebTech.repository.UserRepository;
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
     private final ProductRepository productRepository;
     private final ShopRepository shopRepository;
+    private final UserRepository userRepository; // Assuming you have a UserRepository
 
     public CommentService(CommentRepository commentRepository,
                           ProductRepository productRepository,
-                          ShopRepository shopRepository) {
+                          ShopRepository shopRepository,UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.productRepository = productRepository;
         this.shopRepository = shopRepository;
+        this.userRepository = userRepository; // Initialize the UserRepository
     }
 
     public List<Comment> getAllComments() {
@@ -28,11 +34,24 @@ public class CommentService {
     public Comment getCommentById(long id) {
         return this.commentRepository.findById(id).orElse(null);
     }
+    public List<CommentDTO> getCommentsByProductId(long productId) {
+        List<Comment> Comments=this.commentRepository.findByProduct_Id(productId);
+        return Comments.stream()
+                .map(comment -> CommentDTO.builder()
+                        .id(comment.getId())
+                        .content(comment.getContent())
+                        .rating(comment.getRating())
+                        .date(comment.getDate())
+                        .productId(comment.getProduct().getId())
+                        .userId(comment.getUser().getId())
+                        .build())
+                .toList();
+    }
 
-    public Comment createComment(Comment comment) {
-        Comment createdComment = this.commentRepository.save(comment);
-        updateProductAndShopRating(String.valueOf(comment.getProduct().getId()));
-        return createdComment;
+    public Comment createComment(CommentDTO commentDTO) {
+        Comment comment = new Comment();
+        comment= convertToComment(commentDTO);
+        return this.commentRepository.save(comment);
     }
 
     public Comment updateComment(Comment comment) {
@@ -79,6 +98,30 @@ public class CommentService {
         }
         shop.setRating(shopAverage);
         shopRepository.save(shop);
+    }
+    public CommentDTO convertToDTO(Comment comment) {
+        return CommentDTO.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .rating(comment.getRating())
+                .date(comment.getDate())
+                .productId(comment.getProduct().getId())
+                .userId(comment.getUser().getId())
+                .build();
+    }
+    public Comment convertToComment(CommentDTO commentDTO) {
+        Comment comment = new Comment();
+        comment.setId(commentDTO.getId());
+        comment.setContent(commentDTO.getContent());
+        comment.setRating(commentDTO.getRating());
+        comment.setDate(commentDTO.getDate());
+        // Assuming you have methods to get Product and User by their IDs
+        Product product = productRepository.findById(commentDTO.getProductId()).orElse(null);
+        comment.setProduct(product);
+        // Assuming you have a method to get User by ID
+        User user = userRepository.findById(commentDTO.getUserId()).orElse(null);
+        comment.setUser(user);
+        return comment;
     }
     
 }

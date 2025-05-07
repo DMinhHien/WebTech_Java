@@ -31,7 +31,7 @@ public class ProductController {
     }
 
     @GetMapping("/Product/getElementById/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
@@ -50,7 +50,7 @@ public class ProductController {
         List<ProductDTO> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
-    @GetMapping("/Product/getListUseCategor/{categoryId}")
+    @GetMapping("/Product/getListUseCategory/{categoryId}")
     public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable Long categoryId) {
         return ResponseEntity.ok(productService.getProductsByCategoryId(categoryId));
     }

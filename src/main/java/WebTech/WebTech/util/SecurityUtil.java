@@ -47,7 +47,7 @@ public class SecurityUtil {
         ResLoginDTO.UserInsideToken userToken = new ResLoginDTO.UserInsideToken();
         userToken.setId(dto.getUser().getId());
         userToken.setEmail(dto.getUser().getEmail());
-        userToken.setName(dto.getUser().getName());
+        userToken.setName(dto.getUser().getAccountName());
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
         // @formatter:off
@@ -69,7 +69,7 @@ public class SecurityUtil {
         ResLoginDTO.UserInsideToken userToken = new ResLoginDTO.UserInsideToken();
         userToken.setId(dto.getUser().getId());
         userToken.setEmail(dto.getUser().getEmail());
-        userToken.setName(dto.getUser().getName());
+        userToken.setName(dto.getUser().getAccountName());
         Instant now = Instant.now();
         Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
         // @formatter:off

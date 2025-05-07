@@ -2,6 +2,7 @@ package WebTech.WebTech.controller;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,7 +36,7 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping("/Users")
+    @PostMapping("/User")
     public ResponseEntity<ResCreateUserDTO> createNewUser(@RequestBody User postUser){
         String hashPassword = this.passwordEncoder.encode(postUser.getPassword());
         postUser.setPassword(hashPassword);
@@ -44,7 +45,7 @@ public class UserController {
         return ResponseEntity.ok().body(resCreateUserDTO);
     }
 
-    @PostMapping("/Users/CreateUserAdmin")
+    @PostMapping("/User/CreateUserAdmin")
     public ResponseEntity<ResCreateUserDTO> createNewUserAdmin(@RequestBody User user) throws IdInvalidException{
         String hashPassword = this.passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
@@ -56,7 +57,7 @@ public class UserController {
         return ResponseEntity.ok().body(resCreateUserDTO);
     }
 
-    @DeleteMapping("/Users/{id}")
+    @DeleteMapping("/User/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) throws IdInvalidException{
         User user = this.userService.fetchUserById(id);
         if(user == null){
@@ -66,7 +67,7 @@ public class UserController {
         return ResponseEntity.ok().body(null);
     }
 
-    @GetMapping("/Users/{id}")
+    @GetMapping("/User/getElementById/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable("id") long id) throws IdInvalidException{
         UserDTO user = this.userService.fetchUserDTOById(id);
         if(user == null){
@@ -75,27 +76,37 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @PutMapping("/Users")
+    @PutMapping("/User")
     public ResponseEntity<User> updateUser(@RequestBody User user){
         User currentUser = this.userService.handleUpdateUser(user);
         return ResponseEntity.ok().body(currentUser);
     }
 
-    @PutMapping("/Users/UpdateClient")
+    @PutMapping("/User/UpdateClient")
     public ResponseEntity<User> updateUserClient(@RequestParam(value = "email") String email, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "birthDay", required = false) Instant birthDay, @RequestParam(value = "phoneNumber", required = false) String phoneNumber, @RequestParam(value = "address", required = false) String address, @RequestParam(value = "userImage", required = false) MultipartFile userImage) throws IOException{
         return ResponseEntity.ok().body(this.userService.handleUpdateUserClient(email, name, birthDay, phoneNumber, address, userImage));
     }
     
-    @GetMapping("/Users")
+    @GetMapping("/User")
     public ResponseEntity<ResultPaginationDTO> getAllUsers (@Filter Specification<User> spec, Pageable pageable){
         return ResponseEntity.ok().body(this.userService.fetchAllUsers(spec, pageable));
     }
 
-    @PostMapping("/Users/ChangePassword")
+    @PostMapping("/User/ChangePassword")
     public ResponseEntity<User> changePassword(@RequestParam("email") String email, @RequestParam("oldPassword") String oldPassword, @RequestParam("password") String password) throws IdInvalidException{
         if(this.userService.changePassword(email, oldPassword, password) == null){
             throw new IdInvalidException("Mat khau hien tai khong dung");
         }
         return ResponseEntity.ok().body(this.userService.changePassword(email, oldPassword, password));
+    }
+    @PutMapping("/User/EditUser")
+    public ResponseEntity<User> updateUserEdit(@RequestBody UserDTO dto) throws IdInvalidException {
+        // In the service, update only the fields from dto.
+        User updatedUser = userService.handleUpdateUserEdit(dto);
+        return ResponseEntity.ok(updatedUser);
+    }
+    @GetMapping("/User/getListUse")
+    public ResponseEntity<List<UserDTO>> getListUse() {
+        return ResponseEntity.ok(this.userService.getListUse());
     }
 }

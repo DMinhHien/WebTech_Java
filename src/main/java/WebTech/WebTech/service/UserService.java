@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -22,6 +23,7 @@ import WebTech.WebTech.domain.DTO.ResCreateUserDTO;
 import WebTech.WebTech.domain.DTO.ResultPaginationDTO;
 import WebTech.WebTech.domain.DTO.UserDTO;
 import WebTech.WebTech.repository.UserRepository;
+import WebTech.WebTech.util.error.IdInvalidException;
 
 @Service
 public class UserService {
@@ -212,5 +214,31 @@ public class UserService {
                     .build();
         }
         return null;
+    }
+    public User handleUpdateUserEdit(UserDTO dto) throws IdInvalidException {
+        User user = fetchUserById(dto.getId());
+        if(user == null){
+            throw new IdInvalidException("User not found");
+        }
+        // Update the fields as needed
+        user.setName(dto.getName());
+        user.setAddress(dto.getAddress());
+        user.setEmail(dto.getEmail());
+        user.setBirthDay(dto.getBirthDay());
+        return this.userRepository.save(user);
+    }
+    public List<UserDTO> getListUse() {
+        List<User> users = this.userRepository.findAll();
+        return users.stream()
+                .map(user -> UserDTO.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .birthDay(user.getBirthDay())
+                        .phoneNumber(user.getPhoneNumber())
+                        .address(user.getAddress())
+                        .role(user.getRole() != null ? user.getRole().getName() : null) // Extract role name
+                        .build())
+                .toList();
     }
 }

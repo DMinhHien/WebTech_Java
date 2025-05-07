@@ -13,6 +13,7 @@ import WebTech.WebTech.domain.DTO.ShopGroupDTO;
 import WebTech.WebTech.domain.DTO.ShopInfoDTO;
 import WebTech.WebTech.repository.CartDetailRepository;
 import WebTech.WebTech.repository.CartRepository;
+import WebTech.WebTech.repository.ProductRepository;
 import WebTech.WebTech.repository.UserRepository;
 
 import WebTech.WebTech.domain.User;
@@ -28,15 +29,28 @@ public class CartService {
     private final CartDetailRepository cartDetailRepository;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
-    public CartService(CartRepository cartRepository, 
-                      CartDetailRepository cartDetailRepository,
-                      UserRepository userRepository) {
+    private final ProductRepository productRepository;
+    public CartService(ProductRepository productRepository, 
+                       CartRepository cartRepository, 
+                       CartDetailRepository cartDetailRepository,
+                       UserRepository userRepository) {
+        this.productRepository = productRepository;
         this.cartRepository = cartRepository;
         this.cartDetailRepository = cartDetailRepository;
         this.userRepository = userRepository;
     }
+
     public List<Cart> getAllCarts() {
         return cartRepository.findAll();
+    }
+    public CartDTO convertDetailToDTO(Cart cart) {
+        if (cart == null || cart.getUser() == null) {
+            return null;
+        } 
+        return CartDTO.builder()
+                .id(cart.getId())
+                .userId(cart.getUser().getId())
+                .build();
     }
     public Cart createCartfromDTO(CartDTO cartdto) {
         Cart cart = new Cart();
@@ -60,9 +74,6 @@ public class CartService {
     }
     public Cart findByUserId(long userId) {
         return cartRepository.findByUserId(userId);
-    }
-      public CartDetail updateCartDetail(CartDetail cartDetail) {
-        return cartDetailRepository.save(cartDetail);
     }
     public void deleteCartDetail(long id) {
         cartDetailRepository.deleteById(id);
@@ -131,32 +142,34 @@ public class CartService {
             .shops(shopGroups)
             .build();
     }
-    public CartDetail addCartProduct(CartDetail model) {
-      
-        Long cartId = model.getCart().getId();
+    public CartDetail addCartProduct(CartDetailDTO dto) {
+        // Fetch the product entity
+        Product product = productRepository.findById(dto.getIdProduct())
+               .orElseThrow(() -> new RuntimeException("Product not found with id: " + dto.getIdProduct()));
         
-        CartDetail existsProduct = cartDetailRepository.findByProduct_IdAndCart_Id(model.getProduct().getId(), cartId);
+        // Fetch the cart entity (ensure cart is not null)
+        Cart cart = cartRepository.findById(dto.getIdCart());
+        if (cart == null) {
+            throw new RuntimeException("Cart not found with id: " + dto.getIdCart());
+        }
+        CartDetail existingDetail = cartDetailRepository.findByCart_IdAndProduct_Id(cart.getId(), product.getId());
         
-        if (existsProduct != null) {
-            
-            existsProduct.setQuantity(existsProduct.getQuantity() + 1);
-            cartDetailRepository.save(existsProduct);
-            return existsProduct;
+        if (existingDetail != null) {
+
+            existingDetail.setQuantity(existingDetail.getQuantity() + dto.getQuantity());
+            return cartDetailRepository.save(existingDetail);
         } else {
-         
-            String newId = UUID.randomUUID().toString().substring(0, 10);
-            model.setId(Long.parseLong(newId));
-            cartDetailRepository.save(model);
-            return model;
+            CartDetail newCartDetail = new CartDetail();
+            newCartDetail.setProduct(product);
+            newCartDetail.setQuantity(dto.getQuantity());
+            newCartDetail.setCart(cart);
+            return cartDetailRepository.save(newCartDetail);
         }
     }
     public CartDetail editCartDetail (CartDetailDTO cartDetailDTO) {
         CartDetail cartDetail = cartDetailRepository.findById(cartDetailDTO.getId())
                 .orElseThrow(() -> new RuntimeException("CartDetail not found with id: " + cartDetailDTO.getId()));
-        
-     
         cartDetail.setQuantity(cartDetailDTO.getQuantity());
-   
         return cartDetailRepository.save(cartDetail);
     }
     public CartDetail deleteCartDetail (CartDetailDTO cartDetailDTO) {

@@ -1,5 +1,8 @@
 package WebTech.WebTech.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,21 +16,21 @@ public class CommentController {
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
     }
-    @PostMapping("/Comments/create")
-    public void createComment(@RequestBody Comment comment) {
-        commentService.createComment(comment);
-    } 
-    @PostMapping("/Comments/delete")
+    @PostMapping("/Comment/create")
+    public void createComment(@RequestBody CommentDTO commentDTO) {
+        commentService.createComment(commentDTO);
+    }
+    @PostMapping("/Comment/delete")
     public void deleteComment(@RequestBody Long id) {
         commentService.deleteComment(id);
     }
-    @PostMapping("/Comments/edit")
+    @PostMapping("/Comment/edit")
     public void updateComment(@RequestBody Comment comment) {
         commentService.updateComment(comment);
     }
-    @PostMapping("/Comments/getListUse")
-    public Comment getListUse(@PathVariable Long id) {
-        return commentService.getCommentById(id);
+    @GetMapping("/Comment/getListUse/{id}")
+    public List<CommentDTO> getListUse(@PathVariable Long id) {
+        return commentService.getCommentsByProductId(id);
     }
     
 }

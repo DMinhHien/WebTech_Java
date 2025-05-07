@@ -45,23 +45,23 @@ public class AuthController {
     public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody ReqLoginDTO loginDTO) {
         // Nạp input gồm username/password vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginDTO.getUsername(), loginDTO.getPassword());
+                loginDTO.getEmail(), loginDTO.getPassword());
         // xác thực người dùng => cần viết hàm loadUserByUsername
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         // nạp thông tin (nếu xử lý thành công) vào SecurityContext
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResLoginDTO res = new ResLoginDTO();
-        User user = this.userService.handleGetUserByUsername(loginDTO.getUsername());
+        User user = this.userService.handleGetUserByUsername(loginDTO.getEmail());
         if (user != null) {
             ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(user.getId(), user.getEmail(), user.getName(), user.getPhoneNumber(), user.getAddress(), user.getBirthDay(), user.getUserImage(),
-                    user.getRole());
+                    user.getRole().getName());
             res.setUser(userLogin);
         }
         String access_token = this.securityUtil.createAccessToken(authentication.getName(), res);
-        res.setAccessToken(access_token);
-        String refresh_token = this.securityUtil.createRefreshToken(loginDTO.getUsername(), res);
-        this.userService.updateUserToken(refresh_token, loginDTO.getUsername());
+        res.setToken(access_token);
+        String refresh_token = this.securityUtil.createRefreshToken(loginDTO.getEmail(), res);
+        this.userService.updateUserToken(refresh_token, loginDTO.getEmail());
 
         // set cookies
         ResponseCookie responseCookie = ResponseCookie.from("refresh_token", refresh_token)
@@ -83,8 +83,8 @@ public class AuthController {
         if (user != null) {
             userLogin.setId(user.getId());
             userLogin.setEmail(user.getEmail());
-            userLogin.setName(user.getName());
-            userLogin.setRole(user.getRole());
+            userLogin.setAccountName(user.getName());
+            userLogin.setRole(user.getRole().getName());
             userGetAccount.setUser(userLogin);
         }
         return ResponseEntity.ok().body(userGetAccount);
@@ -103,11 +103,11 @@ public class AuthController {
         User user = this.userService.handleGetUserByUsername(email);
         if (user != null) {
             ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(user.getId(), user.getEmail(), user.getName(), user.getPhoneNumber(), user.getAddress(), user.getBirthDay(), user.getUserImage(),
-                    user.getRole());
+                    user.getRole().getName());
             res.setUser(userLogin);
         }
         String access_token = this.securityUtil.createAccessToken(email, res);
-        res.setAccessToken(access_token);
+        res.setToken(access_token);
         String new_refresh_token = this.securityUtil.createRefreshToken(email, res);
         this.userService.updateUserToken(new_refresh_token, email);
 

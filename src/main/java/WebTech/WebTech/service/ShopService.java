@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import WebTech.WebTech.domain.Shop;
 import WebTech.WebTech.domain.DTO.ShopDTO;
 import WebTech.WebTech.repository.ShopRepository;
+import jakarta.persistence.EntityNotFoundException;
 @Service
 public class ShopService {
     private final ShopRepository shopRepository;
@@ -31,8 +32,16 @@ public class ShopService {
         return this.shopRepository.save(shop);
     }
 
-    public Shop updateShop(Shop shop) {
-        return this.shopRepository.save(shop);
+   public Shop updateShop(ShopDTO shopDTO) {
+        // Fetch the existing shop.
+        Shop existingShop = shopRepository.findById(shopDTO.getId());
+        // Update the fields that are allowed to change.
+        existingShop.setName(shopDTO.getName());
+        existingShop.setAddress(shopDTO.getAddress());
+        existingShop.setImage(shopDTO.getImage());
+        existingShop.setRating(shopDTO.getRating());
+        // Do NOT update the user/userId here so it remains unchanged.
+        return shopRepository.save(existingShop);
     }
 
     public void deleteShop(long id) {
@@ -49,7 +58,19 @@ public class ShopService {
                 .image(shop.getImage())
                 .userName(shop.getUser().getEmail())
                 .rating(shop.getRating())
+                .userId(shop.getUser().getId())
                 .build();
+    }
+    public Shop convertToShop(ShopDTO shopDTO) {
+        Shop shop = new Shop();
+        shop.setId(shopDTO.getId());
+        shop.setName(shopDTO.getName());
+        shop.setAddress(shopDTO.getAddress());
+        shop.setImage(shopDTO.getImage());
+        // Assuming you have a method to find user by email or ID
+        // User user = userRepository.findByEmail(shopDTO.getUserName());
+        // shop.setUser(user);
+        return shop;
     }
     public ShopDTO getShopByUserId (long userId) {
         return convertToDTO(this.shopRepository.findByUser_Id(userId));

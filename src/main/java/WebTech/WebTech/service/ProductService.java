@@ -26,8 +26,10 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public Product getProductById(long id) {
-        return productRepository.findById(id).orElse(null);
+    public ProductDTO getProductById(long id) {
+        return productRepository.findById(id)
+            .map(this::convertToDTO)
+            .orElse(null);
     }
     public void deleteProduct(long id) {
         productRepository.deleteById(id);
@@ -47,7 +49,7 @@ public class ProductService {
         product.setShop(shop);
         
         // Get Category by ID
-        Category category = categoryRepository.findById(productDTO.getIdCategory());
+        Category category = categoryRepository.findById(productDTO.getCategoryId());
         product.setCategory(category);
         return product;
     }
@@ -64,7 +66,7 @@ public class ProductService {
             .quantity(product.getQuantity())
             .description(product.getDescription())
             .idShop(product.getShop() != null ? product.getShop().getId() : 0)
-            .idCategory(product.getCategory() != null ? product.getCategory().getId() : 0)
+            .categoryId(product.getCategory() != null ? product.getCategory().getId() : 0)
             .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
             .status(product.getStatus())
             .rating(product.getRating())
@@ -89,9 +91,9 @@ public class ProductService {
         product.setShop(shop);
 
         // Get Category by ID
-        Category category = categoryRepository.findById(productDTO.getIdCategory());
+        Category category = categoryRepository.findById(productDTO.getCategoryId());
         if (category == null) {
-            throw new EntityNotFoundException("Category not found with id: " + productDTO.getIdCategory());
+            throw new EntityNotFoundException("Category not found with id: " + productDTO.getCategoryId());
         }
         product.setCategory(category);
 

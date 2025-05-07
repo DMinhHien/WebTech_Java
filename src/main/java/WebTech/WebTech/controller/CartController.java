@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import WebTech.WebTech.domain.Cart;
 import WebTech.WebTech.domain.CartDetail;
 import WebTech.WebTech.domain.DTO.CartDTO;
-
+import WebTech.WebTech.domain.DTO.CartDetailDTO;
 import WebTech.WebTech.domain.DTO.CartResponseDTO;
 import WebTech.WebTech.service.CartService;
 
@@ -41,29 +41,28 @@ public class CartController {
     @PostMapping("/Cart/addCartProduct")
     public ResponseEntity<CartDetail> addCartProduct(@RequestBody Map<String, Object> payload) {
         ObjectMapper mapper = new ObjectMapper();
-        // Extract the 'data' node from the payload and convert it to a CartDetail
+        // Extract the 'data' node from the payload and convert it to a CartDetailDTO
         JsonNode dataNode = mapper.convertValue(payload.get("data"), JsonNode.class);
-        CartDetail model = mapper.convertValue(dataNode, CartDetail.class);
-        return ResponseEntity.ok(cartService.addCartProduct(model));
+        CartDetailDTO dto = mapper.convertValue(dataNode, CartDetailDTO.class);
+        return ResponseEntity.ok(cartService.addCartProduct(dto));
     }
-    @PostMapping("/Cart/getCartId/{userId}")
+    @GetMapping("/Cart/getCartId/{userId}")
     public String getCartId(@PathVariable String userId) {
         return cartService.getCartId(Long.parseLong(userId));
     }
-    @PostMapping("/CartdeleteCartDetail/{id}")
+    @PostMapping("/Cart/deleteCartDetail/{id}")
     public ResponseEntity<Void> deleteCartDetail(@PathVariable String id) {
         cartService.deleteCartDetail(Long.parseLong(id));
         return ResponseEntity.noContent().build();
     }
-    @PostMapping("/Cart/editCartDetail")
+   @PostMapping("/Cart/editCartDetail")
     public ResponseEntity<CartDetail> updateCartDetail(@RequestBody Map<String, Object> payload) {
         ObjectMapper mapper = new ObjectMapper();
-        // Extract the 'data' node from the payload and convert it to a CartDetail
+        // Extract the "data" object and convert it to a CartDetailDTO
         JsonNode dataNode = mapper.convertValue(payload.get("data"), JsonNode.class);
-        CartDetail model = mapper.convertValue(dataNode, CartDetail.class);
-        return ResponseEntity.ok(cartService.updateCartDetail(model));
+        CartDetailDTO cartDetailDTO = mapper.convertValue(dataNode, CartDetailDTO.class);
+        // Call service method to update the quantity
+        CartDetail updated = cartService.editCartDetail(cartDetailDTO);
+        return ResponseEntity.ok(updated);
     }
-    
-    
-    
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import WebTech.WebTech.domain.Permission;
 import WebTech.WebTech.domain.Role;
 import WebTech.WebTech.domain.DTO.ResultPaginationDTO;
+import WebTech.WebTech.domain.DTO.RoleDTO;
 import WebTech.WebTech.repository.PermissionRepository;
 import WebTech.WebTech.repository.RoleRepository;
 
@@ -104,5 +105,17 @@ public class RoleService {
         Role role = this.fetchById(id);
         role.setActive(true);
         return this.roleRepository.save(role);
+    }
+    public List<RoleDTO> getListRole() {
+        List<Role> roles = this.roleRepository.findAll();
+        List<RoleDTO> roleDTOs = new ArrayList<>();
+        for (Role role : roles) {
+            RoleDTO roleDTO = RoleDTO.builder()
+                    .id(role.getId())
+                    .name(role.getName())
+                    .build();
+            roleDTOs.add(roleDTO);
+        }
+        return roleDTOs;
     }
 }
