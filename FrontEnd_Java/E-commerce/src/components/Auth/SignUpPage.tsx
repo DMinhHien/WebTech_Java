@@ -21,28 +21,24 @@ const SignUpPage: React.FC = () => {
   
       try {
         // Gửi request đăng ký tới backend
+        const isoBirthDate = new Date(birthDate).toISOString();
         const response = await fetch('http://localhost:8080/User/Register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, accountName,birthDate,address,phone }),
+          body: JSON.stringify({ email, password, name:accountName,birthDay:isoBirthDate,address,phone }),
         });
   
         if (response.ok) {
           const data = await response.json();
-          // Đăng nhập tự động sau khi đăng ký thành công
-          login(data.user, data.token);
-          var id=data.user.id
-          var role="User"
-          addRole(id,role)
-          data.user.role=role
+          var id=data.data.id
           createCart(id)
-          // Chuyển hướng về trang chủ
-          navigate('/');
+          navigate('/login', { state: { message: "Đăng ký thành công, vui lòng đăng nhập lại!" } });
         } else {
           const errorData = await response.json();
           setError(errorData.message || 'Đăng ký thất bại, hãy chắc chắn điền đầy đủ thông tin cá nhân, gmail đúng định dạng, mật khẩu phải có chữ cái đặc biệt, số, chữ in hoa !');
         }
       } catch (error) {
+        console.error('Error during registration:', error);
         setError('Đã xảy ra lỗi khi đăng ký');
       }
     };

@@ -3,6 +3,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -31,7 +32,7 @@ public class Receipt {
     @JoinColumn(name = "user_id")
     private User user;
     private Instant date;
-    @OneToMany(mappedBy = "receipt", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "receipt",cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ReceiptDetail> receiptDetails;
     
 }

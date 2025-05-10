@@ -187,4 +187,11 @@ public class CartService {
             return null;
         }
     }
+    public Cart createCartfromUserId(Long userId) {
+        Cart cart = new Cart();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        cart.setUser(user);
+        return cart;
+    }
 }

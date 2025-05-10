@@ -16,7 +16,7 @@ export async function fetchCartDetails(userId: string): Promise<CartDetail[]> {
   export const createCart = async (userId: string) => {
     try {
       const token = localStorage.getItem("token")
-      await axios.post<Cart>('http://localhost:8080/Cart/create', { userId  }, { headers: { Authorization: `Bearer ${token}` } })
+      await axios.post<Cart>('http://localhost:8080/Cart/create',{userId}  , { headers: { Authorization: `Bearer ${token}` } })
     } catch (error) {
       console.error("không thể tạo giỏ hàng", error);
       throw error

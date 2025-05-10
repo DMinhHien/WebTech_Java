@@ -7,6 +7,7 @@ import WebTech.WebTech.service.ShopService;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +22,8 @@ public class ShopController {
     public void createShop(@RequestBody Shop shop) {
         shopService.createShop(shop);
     } 
-    @PostMapping("/Shop/delete")
-    public void deleteShop(@RequestBody Long id) {
+    @DeleteMapping("/Shop/delete/{id}")
+    public void deleteShop(@PathVariable Long id) {
         shopService.deleteShop(id);
     }
     @PostMapping("/Shop/edit")

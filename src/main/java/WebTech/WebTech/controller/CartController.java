@@ -31,8 +31,9 @@ public class CartController {
         this.cartService = cartService;
     }
     @PostMapping("/Cart/create")
-    public ResponseEntity<Cart> createCart(@RequestBody CartDTO cartDTO) {
-        return ResponseEntity.ok(cartService.createCartfromDTO(cartDTO));
+    public ResponseEntity<Cart> createCart(@RequestBody Map<String, Object> payload) {
+        Long userId = Long.parseLong(payload.get("userId").toString());
+        return ResponseEntity.ok(cartService.createCartfromUserId(userId));
     } 
     @GetMapping("/Cart/getListUse/{userId}")
     public ResponseEntity<CartResponseDTO> getCartByUserId(@PathVariable Long userId) {

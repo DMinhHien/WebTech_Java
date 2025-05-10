@@ -50,7 +50,7 @@ public class UserService {
                 return this.userRepository.save(newUser);
             }
             else{
-                Role role = this.roleService.getRoleByName("CUSTOMER");
+                Role role = this.roleService.getRoleByName("User");
                 user.setRole(role);
                 this.userRepository.save(user);
                 return user;
@@ -258,5 +258,20 @@ public class UserService {
         Role role = roleOptional.get();
         user.setRole(role);
         return userRepository.save(user);
+    }
+    public User addRoleToUser(long userId, String roleName) throws IdInvalidException {
+        User user = fetchUserById(userId);
+        if(user == null) {
+            throw new IdInvalidException("User not found with id: " + userId);
+        }
+        Role role = roleRepository.findByName(roleName);
+        if(role == null) {
+            throw new RuntimeException("Role not found with name: " + roleName);
+        }
+        user.setRole(role);
+        return userRepository.save(user);
+    }
+    public void deleteUserById(long id) {
+        userRepository.deleteById(id);
     }
 }

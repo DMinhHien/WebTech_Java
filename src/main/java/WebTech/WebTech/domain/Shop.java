@@ -1,6 +1,7 @@
 package WebTech.WebTech.domain;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -32,6 +33,6 @@ public class Shop {
     private String address;
     private double rating;
     private String image;
-    @OneToMany(mappedBy = "shop", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.REMOVE, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Product> products;
 }

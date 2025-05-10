@@ -1,14 +1,15 @@
 // LoginPage.tsx
 import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Container, Paper, Link } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const {login} = useAuth();
-
+  const location = useLocation();
+  const message = location.state?.message;
   const handleLogin = async() => {
     try{
     // Thêm logic xử lý đăng nhập ở đây
@@ -43,7 +44,11 @@ const LoginPage: React.FC = () => {
         <Typography variant="h4" component="h1" align="center" gutterBottom>
           Đăng Nhập
         </Typography>
-        
+        {message && (
+          <Typography variant="subtitle1" color="success" align="center" sx={{ mb: 2 }}>
+            {message}
+          </Typography>
+        )}
         <Box component="form" sx={{ mt: 2 }}>
           <TextField
             label="Email"

@@ -118,4 +118,20 @@ public class UserController {
         User updatedUser = userService.updateUserRole(userId, roleId);
         return ResponseEntity.ok(updatedUser);
     }
+    @PostMapping("/User/addRole")
+    public ResponseEntity<User> addRole(@RequestBody Map<String, Object> payload) throws IdInvalidException {
+        long userId = Long.parseLong(payload.get("userId").toString());
+        String roleName = payload.get("roleName").toString();
+        User updatedUser = userService.addRoleToUser(userId, roleName);
+        return ResponseEntity.ok(updatedUser);
+    }
+    @DeleteMapping("/User/delete/{id}")
+    public ResponseEntity<Void> deleteUserById(@PathVariable long id) throws IdInvalidException {
+        User user = this.userService.fetchUserById(id);
+        if (user == null) {
+            throw new IdInvalidException("User not found");
+        }
+        this.userService.deleteUserById(id);
+        return ResponseEntity.ok().body(null);
+    }
 }

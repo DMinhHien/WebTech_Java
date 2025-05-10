@@ -25,7 +25,7 @@ export const createShop = async (shop: ShopDetails) => {
 export const deleteshop = async (id: string) => {
   try {
     const token = localStorage.getItem("token")
-    await axios.post("http://localhost:8080/Shop/delete", { id }, { headers: { Authorization: `Bearer ${token}`, } })
+    await axios.delete(`http://localhost:8080/Shop/delete/${id}`, { headers: { Authorization: `Bearer ${token}` } })
   } catch (error) {
     console.error("không thể xóa shop", error);
     throw error
