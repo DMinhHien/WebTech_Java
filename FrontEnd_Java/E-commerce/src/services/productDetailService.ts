@@ -25,7 +25,7 @@ export const editProduct=async(Product:Product)=>{
 export const deleteProduct=async(id:string)=>{
     try {
         const token=localStorage.getItem("token")
-        const res=await axios.post(`http://localhost:8080/Product/delete`,{id},{headers:{Authorization:`Bearer ${token}`}})
+        const res=await axios.post(`http://localhost:8080/Product/delete/${id}`,{},{headers:{Authorization:`Bearer ${token}`}})
         return res.data
     } catch (error) {
         console.error("không thể xóa sản phẩm",error);

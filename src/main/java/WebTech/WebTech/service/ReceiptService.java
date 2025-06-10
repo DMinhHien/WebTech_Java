@@ -91,21 +91,20 @@ public class ReceiptService {
             }).sum();
 
             // For ShopName, we fetch the shop name from the first receipt detail's product.
-            String shopName = "";
-            if (!details.isEmpty()) {
-                ReceiptDetail firstDetail = details.get(0);
-                Product product = productRepository.findById(firstDetail.getProduct().getId()).orElse(null);
-                if (product != null && product.getShop() != null) {
-                    Shop shop = product.getShop();
-                    shopName = shop.getName();
-                }
-            }
+            // String shopName = "";
+            // if (!details.isEmpty()) {
+            //     ReceiptDetail firstDetail = details.get(0);
+            //     Product product = productRepository.findById(firstDetail.getProduct().getId()).orElse(null);
+            //     if (product != null && product.getShop() != null) {
+            //         Shop shop = product.getShop();
+            //         shopName = shop.getName();
+            //     }
+            // }
 
             ReceiptResponseDTO dto = ReceiptResponseDTO.builder()
                     .id(receipt.getId())
                     .date(receipt.getDate())
                     .totalAmount(totalAmount)
-                    .shopName(shopName)
                     .build();
 
             result.add(dto);

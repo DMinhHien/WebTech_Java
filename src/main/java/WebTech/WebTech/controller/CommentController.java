@@ -20,13 +20,13 @@ public class CommentController {
     public void createComment(@RequestBody CommentDTO commentDTO) {
         commentService.createComment(commentDTO);
     }
-    @PostMapping("/Comment/delete")
-    public void deleteComment(@RequestBody Long id) {
+    @PostMapping("/Comment/delete/{id}")
+    public void deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
     }
     @PostMapping("/Comment/edit")
-    public void updateComment(@RequestBody Comment comment) {
-        commentService.updateComment(comment);
+    public void updateComment(@RequestBody CommentDTO commentDTO) {
+        commentService.updateComment(commentDTO);
     }
     @GetMapping("/Comment/getListUse/{id}")
     public List<CommentDTO> getListUse(@PathVariable Long id) {

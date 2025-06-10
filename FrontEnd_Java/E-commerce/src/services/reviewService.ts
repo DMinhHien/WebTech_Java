@@ -24,7 +24,7 @@ export const fetchComments = async (productId: string): Promise<Comment[]> => {
 export const editComment=async(Comment:CommentDTO)=>{
   try {
       const token=localStorage.getItem("token")
-      await axios.post(`http://localhost:8080/Comment/edit`,{Comment },{ headers: {Authorization:`Bearer ${token}`} })
+      await axios.post(`http://localhost:8080/Comment/edit`,Comment,{ headers: {Authorization:`Bearer ${token}`} })
   } catch (error) {
       console.error("không thể chỉnh sửa sản phẩm",error);
       throw error
@@ -34,7 +34,7 @@ export const editComment=async(Comment:CommentDTO)=>{
 export const deleteComment=async(id:string)=>{
   try {
       const token=localStorage.getItem("token")
-      const res=await axios.post(`http://localhost:8080/Comment/delete`,{id},{headers:{Authorization:`Bearer ${token}`}})
+      const res=await axios.post(`http://localhost:8080/Comment/delete/${id}`,{},{headers:{Authorization:`Bearer ${token}`}})
       return res.data
   } catch (error) {
       console.error("không thể xóa sản phẩm",error);

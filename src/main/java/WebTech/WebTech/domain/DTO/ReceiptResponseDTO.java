@@ -10,5 +10,5 @@ public class ReceiptResponseDTO {
     private long id;
     private Instant date;
     private double totalAmount; 
-    private String shopName; 
+    // private String shopName; 
 }

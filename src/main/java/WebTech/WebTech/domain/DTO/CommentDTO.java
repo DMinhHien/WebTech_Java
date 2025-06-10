@@ -15,6 +15,7 @@ public class CommentDTO {
     private String content;
     private double rating;
     private Instant date;
+    private String username;
     private long productId; 
     private long userId;     
 }

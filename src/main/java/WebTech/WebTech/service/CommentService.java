@@ -44,6 +44,7 @@ public class CommentService {
                         .date(comment.getDate())
                         .productId(comment.getProduct().getId())
                         .userId(comment.getUser().getId())
+                        .username(comment.getUser().getName()) // Assuming User has a getUsername() method
                         .build())
                 .toList();
     }
@@ -54,7 +55,8 @@ public class CommentService {
         return this.commentRepository.save(comment);
     }
 
-    public Comment updateComment(Comment comment) {
+    public Comment updateComment(CommentDTO commentDTO) {
+        Comment comment = convertToComment(commentDTO);
         Comment updatedComment = this.commentRepository.save(comment);
         updateProductAndShopRating(String.valueOf(comment.getProduct().getId()));
         return updatedComment;
@@ -115,10 +117,8 @@ public class CommentService {
         comment.setContent(commentDTO.getContent());
         comment.setRating(commentDTO.getRating());
         comment.setDate(commentDTO.getDate());
-        // Assuming you have methods to get Product and User by their IDs
         Product product = productRepository.findById(commentDTO.getProductId()).orElse(null);
         comment.setProduct(product);
-        // Assuming you have a method to get User by ID
         User user = userRepository.findById(commentDTO.getUserId()).orElse(null);
         comment.setUser(user);
         return comment;

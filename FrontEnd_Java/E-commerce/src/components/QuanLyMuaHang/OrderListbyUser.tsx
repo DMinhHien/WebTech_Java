@@ -46,7 +46,6 @@ export default function OrderList({orders}:OrderListProps) {
         <thead>
           <tr style={{backgroundColor:"#FBFAF1"}} className="text-left ">
             <th className="border border-gray-300 py-2 px-4 border-b">Mã đơn hàng</th>
-            <th className="border border-gray-300 py-2 px-4 border-b">Shop</th>
             <th className="border border-gray-300 py-2 px-4 border-b">Tổng tiền</th>
             <th className="border border-gray-300 py-2 px-2 border-b">Ngày tạo</th>
             <th className="border border-gray-300 py-2 px-2 border-b">Xem chi tiết</th>
@@ -56,7 +55,6 @@ export default function OrderList({orders}:OrderListProps) {
           {orders.map((order) => (
             <tr key={order.id}>
               <td className="border border-gray-300 py-2 px-4 border-b">{order.id}</td>
-              <td className="border border-gray-300 py-2 px-4 border-b">{order.shopName}</td>
               <td className="border border-gray-300 py-2 px-4 border-b">{order.totalAmount?.toLocaleString('vi-VN')} VND</td>
               <td className="border border-gray-300 py-2 px-4 border-b"> {order.date ? new Date(order.date).toLocaleDateString() : 'N/A'}</td>
                 <td className="border border-gray-300 py-2 px-4 border-b">
