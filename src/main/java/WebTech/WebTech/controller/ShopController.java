@@ -19,8 +19,8 @@ public class ShopController {
         this.shopService = shopService;
     }
     @PostMapping("/Shop/create")
-    public void createShop(@RequestBody Shop shop) {
-        shopService.createShop(shop);
+    public void createShop(@RequestBody ShopDTO shopDTO) {
+        shopService.createShop(shopDTO);
     } 
     @DeleteMapping("/Shop/delete/{id}")
     public void deleteShop(@PathVariable Long id) {

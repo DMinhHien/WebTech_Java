@@ -5,7 +5,9 @@ export const addProduct =async(Product:Product)=>{
     try {
         const { id, ...productWithoutId } = Product;    
         const token = localStorage.getItem("token")
-        await axios.post(`http://localhost:8080/Product/create`,{productWithoutId },{ headers: { Authorization: `Bearer ${token}` } })
+        console.log(productWithoutId);
+        
+        await axios.post(`http://localhost:8080/Product/create`,productWithoutId,{ headers: { Authorization: `Bearer ${token}` } })
     } catch (error) {
         console.error("không thể thêm sản phẩm",error);
         throw error

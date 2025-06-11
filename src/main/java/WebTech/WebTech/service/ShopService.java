@@ -1,16 +1,22 @@
 package WebTech.WebTech.service;
 import java.util.List;
+
+import WebTech.WebTech.domain.User;
 import org.springframework.stereotype.Service;
 import WebTech.WebTech.domain.Shop;
 import WebTech.WebTech.domain.DTO.ShopDTO;
 import WebTech.WebTech.repository.ShopRepository;
+import WebTech.WebTech.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 @Service
 public class ShopService {
     private final ShopRepository shopRepository;
+    private final UserRepository userRepository; // Assuming you have a UserRepository
 
-    public ShopService(ShopRepository shopRepository) {
+    public ShopService(ShopRepository shopRepository,
+                       UserRepository userRepository) {
         this.shopRepository = shopRepository;
+        this.userRepository = userRepository; // Initialize the UserRepository
     }
 
     public boolean existsByName(String name) {
@@ -28,7 +34,12 @@ public class ShopService {
         return convertToDTO(this.shopRepository.findById(id));
     }
 
-    public Shop createShop(Shop shop) {
+    public Shop createShop(ShopDTO shopDTO) {
+        Shop shop = new Shop();
+        shop= convertToShop(shopDTO);
+        User user = userRepository.findById(shopDTO.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + shopDTO.getUserId()));
+        shop.setUser(user);
         return this.shopRepository.save(shop);
     }
 

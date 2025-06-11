@@ -1,6 +1,8 @@
 package WebTech.WebTech.domain;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,5 +36,6 @@ public class Shop {
     private double rating;
     private String image;
     @OneToMany(mappedBy = "shop", cascade = CascadeType.REMOVE, orphanRemoval = true,fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Product> products;
 }

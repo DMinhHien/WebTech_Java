@@ -14,12 +14,11 @@ export const getListUsers = async () => {
 
 export const createUser = async (user: User) => {
     try {
-        const { id,  phoneNumber, ...rest } = user;
+        const { id, ...rest } = user;
         const userNoId = {
             ...rest,
-            Phone: phoneNumber,
           };
-        console.log(user)
+        console.log(userNoId)
         await axios.post(`http://localhost:8080/User/Register`, userNoId)
     } catch (error) {
         console.error("không thể tạo user", error);
@@ -54,7 +53,7 @@ export const editUser = async (user: User) => {
         const { password, ...tmp } = user
         await axios.put(`http://localhost:8080/User/EditUser`, {
             
-                name: tmp.accountName, address: tmp.address, email: tmp.email, birthDay: tmp.birthDate, id: tmp.id
+                name: tmp.accountName, address: tmp.address, email: tmp.email, birthDay: tmp.birthDate, id: tmp.id,phoneNumber:tmp.phoneNumber
             
         }, { headers: { Authorization: `Bearer ${token}` } })
     } catch (error) {

@@ -15,7 +15,8 @@ export const fetchShopDetails = async (shopId: string): Promise<ShopDetails> => 
 export const createShop = async (shop: ShopDetails) => {
   try {
     const token = localStorage.getItem("token")
-    await axios.post("http://localhost:8080/Shop/create", { data: { userId: shop.userId, name: shop.name, address: shop.address, image: shop.image } }, { headers: { Authorization: `Bearer ${token}`, } })
+    console.log(shop);
+    await axios.post("http://localhost:8080/Shop/create", shop, { headers: { Authorization: `Bearer ${token}`, } })
   } catch (error) {
     console.error("không thể tạo shop", error);
     throw error

@@ -229,6 +229,7 @@ public class UserService {
         user.setAddress(dto.getAddress());
         user.setEmail(dto.getEmail());
         user.setBirthDay(dto.getBirthDay());
+        user.setPhoneNumber(dto.getPhoneNumber());
         return this.userRepository.save(user);
     }
     public List<UserDTO> getListUse() {

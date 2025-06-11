@@ -25,7 +25,7 @@ const SignUpPage: React.FC = () => {
         const response = await fetch('http://localhost:8080/User/Register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, name:accountName,birthDay:isoBirthDate,address,phone }),
+          body: JSON.stringify({ email, password, name:accountName,birthDay:isoBirthDate,address,phoneNumber:phone}),
         });
   
         if (response.ok) {

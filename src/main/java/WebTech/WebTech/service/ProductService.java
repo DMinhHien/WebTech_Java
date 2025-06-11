@@ -51,6 +51,7 @@ public class ProductService {
         // Get Category by ID
         Category category = categoryRepository.findById(productDTO.getCategoryId());
         product.setCategory(category);
+        productRepository.save(product);
         return product;
     }
     public Product updateProduct(ProductDTO productDTO) {
