@@ -73,7 +73,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => (
                   mt: 0.5,
                 }}
               >
-                {product.unitPrice} VND
+                {product.unitPrice.toLocaleString('vi-VN')} VND
               </Typography>
         </CardContent>
       </Card>

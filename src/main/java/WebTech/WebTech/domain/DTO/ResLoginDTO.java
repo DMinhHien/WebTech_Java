@@ -27,7 +27,7 @@ public class ResLoginDTO {
         private String accountName;
         private String phoneNumber;
         private String address;
-        private Instant birthDay;
+        private Instant birthDate;
         private String userImage;
         private String role;
     }

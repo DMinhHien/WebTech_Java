@@ -23,6 +23,7 @@ const LoginPage: React.FC = () => {
 
     if (response.ok) {
         const data = await response.json();
+        console.log(data);
         login(data.data.user, data.data.token); // Cập nhật trạng thái đăng nhập
         localStorage.setItem("token", data.data.token); // Lưu token vào localStorage
         if (data.data.user.role === 'Admin') {

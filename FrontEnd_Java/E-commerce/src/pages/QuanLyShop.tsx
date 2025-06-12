@@ -88,13 +88,13 @@ export default function QuanLyShop() {
             />
           </div>
           <div className="space-x-4 mt-2">
-            <button
+            {/* <button
               style={{ backgroundColor: "#FBFAF1" }}
               className="border  p-4 rounded-md"
               onClick={create}
             >
               Thêm Shop
-            </button>
+            </button> */}
             <button
               style={{ backgroundColor: "#FBFAF1" }}
               className="border  p-4 rounded-md"

@@ -103,7 +103,7 @@ const MainInfo = ({ product,productId}: Props) => {
           </Typography>
         </Box>
         <Typography variant="h4" color="textPrimary" fontWeight="600" my={3}>
-          {product.unitPrice}{" "}VND
+          {product.unitPrice.toLocaleString('vi-VN')}{" "}VND
         </Typography>
 
         {/* Description */}

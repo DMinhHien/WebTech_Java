@@ -78,6 +78,7 @@ public class UserService {
         resCreateUserDTO.setCreatedAt(user.getCreatedAt());
         resCreateUserDTO.setBirthDay(user.getBirthDay());
         resCreateUserDTO.setAddress(user.getAddress());
+        resCreateUserDTO.setPhoneNumber(user.getPhoneNumber());
         return resCreateUserDTO;
     }
 

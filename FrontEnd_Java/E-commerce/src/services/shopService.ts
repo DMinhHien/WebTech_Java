@@ -36,7 +36,7 @@ export const deleteshop = async (id: string) => {
 export const getShop = async (id: string) => {
   try {
     const res = await axios.get<ShopDetails>(`http://localhost:8080/Shop/getElementById/${id}`)
-    return res.data;
+    return res.data.data;
   } catch (error) {
     console.error("không thể lấý shop", error);
     throw error

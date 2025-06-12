@@ -92,8 +92,8 @@ const Footer = () => {
             fontSize: "14px",
           }}
         >
-          ©2024. Tạo bởi <span style={{ color: "#FF6347" }}>❤️</span> 
-          Nhóm 5
+          ©2025. Tạo bởi <span style={{ color: "#FF6347" }}>❤️</span> 
+          Nhóm 28
         </Typography>
 
         {/* Privacy Policy and Terms */}

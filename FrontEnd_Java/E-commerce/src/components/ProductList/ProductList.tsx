@@ -81,7 +81,7 @@ const ProductList: React.FC = () => {
             </Typography>
             <Typography mt={1} variant="body2" sx={{ color: "#2266AA" }}>
               {displayedProducts.length}{" "}
-              {displayedProducts.length > 1 ? "products" : "product"}
+              {displayedProducts.length > 1 ? "sản phẩm" : "sản phẩm"}
             </Typography>
 
           </Box>

@@ -52,7 +52,9 @@ public class CommentService {
     public Comment createComment(CommentDTO commentDTO) {
         Comment comment = new Comment();
         comment= convertToComment(commentDTO);
-        return this.commentRepository.save(comment);
+        this.commentRepository.save(comment);
+        updateProductAndShopRating(String.valueOf(comment.getProduct().getId()));
+        return comment;
     }
 
     public Comment updateComment(CommentDTO commentDTO) {

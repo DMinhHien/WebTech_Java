@@ -67,7 +67,7 @@ const Offer = () => {
                     marginBottom: "10px",
                   }}
                 >
-                  Lưu Nguyễn Thế Vinh
+                  Nguyễn Bùi Đức Kiên
                 </Typography>
                 <Typography sx={{ color: "#555", marginBottom: "10px" }}>
                 Thành viên

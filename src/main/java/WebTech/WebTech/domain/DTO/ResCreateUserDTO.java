@@ -13,4 +13,5 @@ public class ResCreateUserDTO {
     private String gender;
     private String address;
     private Instant createdAt;
+    private String phoneNumber;
 }

@@ -73,7 +73,7 @@ export default function ProductList({ products, editProduct,onSelectedProductsCh
                   />
                 </td>
                 <td className="border border-gray-300 p-2">{product.productName}</td>
-                <td className="border border-gray-300 p-2">{product.unitPrice} VNĐ</td>
+                <td className="border border-gray-300 p-2">{product.unitPrice.toLocaleString('vi-VN')} VNĐ</td>
                 <td className="border border-gray-300 p-2">{getCategoryNamebyId(product.categoryId,categories)}</td>
                 <td className="border border-gray-300 p-2">{product.quantity}</td>
                 <td className="border border-gray-300 p-2">
